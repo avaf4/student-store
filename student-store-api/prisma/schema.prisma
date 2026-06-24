@@ -21,3 +21,20 @@ model Product {
   imageUrl    String?
   category    String?
 }
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  customer    Int
+  totalPrice  Float
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+}
+
+model OrderItem {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  category    String?
+}
