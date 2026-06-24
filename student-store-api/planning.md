@@ -235,3 +235,29 @@ either **all** rows are committed or **none** are — no partial orders to debug
 Detected in **step 3, before any writes happen**. The endpoint responds `400` with
 `{ "error": "Product with id 999 does not exist" }` and the database is untouched —
 no order and no items are created.
+
+---
+
+## Spec Reconciliation — Milestone 4 (Schema Audit)
+
+Before running the migration I audited `schema.prisma` against this Data Models section.
+
+### Schema vs. spec gaps found
+- **No gaps found — the schema matches the spec.** `OrderItem` has exactly the documented
+  fields (`id`, `orderId`, `productId`, `quantity`, `price`), `quantity` defaults to `1` as
+  noted, and both foreign keys are present.
+- Earlier the starter `OrderItem` block mistakenly contained `Product`'s fields
+  (`name`, `description`, `imageUrl`, `category`). Those were removed and replaced with the
+  correct join-table fields during this milestone.
+
+### Relationships modeled correctly
+- `OrderItem.order` → `Order` via `@relation(fields: [orderId], references: [id])`.
+- `OrderItem.product` → `Product` via `@relation(fields: [productId], references: [id])`.
+- Back-reference arrays added: `Order.orderItems` and `Product.orderItems` (required by
+  Prisma to make the relations bidirectional).
+
+### Cascade delete verification
+- Deleting a `Product` removes associated `OrderItems`: enforced by `onDelete: Cascade` on
+  the `product` relation. [X] to confirm in Postman/Prisma Studio once the DB is live.
+- Deleting an `Order` removes associated `OrderItems`: enforced by `onDelete: Cascade` on
+  the `order` relation. [X] to confirm in Postman/Prisma Studio once the DB is live.

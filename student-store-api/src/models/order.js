@@ -4,14 +4,18 @@ const prisma = require("../db/db");
 // Note: creating an order with its items (POST /orders) is the transactional
 // endpoint built in Milestone 5. The order/items relation arrives in Milestone 4.
 class Order {
-  // GET /orders — return every order
+  // GET /orders — return every order, each with its associated order items
   static async list() {
-    return prisma.order.findMany();
+    return prisma.order.findMany({ include: { orderItems: true } });
   }
 
-  // GET /orders/:id — return one order, or null if it doesn't exist
+  // GET /orders/:id — return one order along with its order items (Prisma's
+  // `include` joins in the related OrderItem rows), or null if it doesn't exist
   static async get(id) {
-    return prisma.order.findUnique({ where: { id } });
+    return prisma.order.findUnique({
+      where: { id },
+      include: { orderItems: true },
+    });
   }
 
   // POST /orders — simple create (full transactional version comes in Milestone 5)
