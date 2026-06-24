@@ -15,10 +15,10 @@ app.get("/", (req, res) => {
 
 // ---------- Product endpoints ----------
 
-// GET /products — fetch all products
+// GET /products — fetch products, with optional ?category= and ?sort= filters
 app.get("/products", async (req, res) => {
   try {
-    const products = await Product.list();
+    const products = await Product.list(req.query);
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch products" });

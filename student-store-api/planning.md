@@ -93,13 +93,36 @@ All non-2xx responses use this shape.
 ### Products
 
 #### GET /products
-- **Request:** none. Optional query params (Milestone 2): `category`, `sort`, `search`.
+- **Request:** none required. Supports optional query parameters (see below).
 - **Success:** `200` — array of product objects.
   ```json
   [ { "id": 1, "name": "College Hoodie", "category": "Apparel",
       "description": "...", "imageUrl": "...", "price": 29.99 } ]
   ```
 - **Error:** `500` — `{ "error": "Failed to fetch products" }`
+
+##### Query Parameters
+
+All parameters are optional and can be combined.
+
+| Param      | Example             | Effect                                                     |
+| ---------- | ------------------- | ---------------------------------------------------------- |
+| `category` | `?category=Apparel` | Filter to products whose `category` matches (case-insensitive). |
+| `sort`     | `?sort=price`       | Sort ascending by `price`.                                 |
+| `sort`     | `?sort=name`        | Sort ascending by `name` (A→Z).                            |
+
+- **Default behavior (no params):** return **all** products, unordered.
+- **Combined:** `?category=Apparel&sort=price` filters to Apparel, then sorts those by price.
+- **Allowed `sort` values:** `price`, `name`. Any other value is ignored (falls back to
+  unordered) rather than erroring.
+- **Invalid / unknown `category`:** not an error. Filtering simply matches zero rows, so
+  the response is `200` with an empty array `[]`.
+
+Examples:
+- `GET /products` → all products, unordered.
+- `GET /products?category=Apparel` → only Apparel products.
+- `GET /products?sort=name` → all products, A→Z by name.
+- `GET /products?category=Books&sort=price` → Books only, cheapest first.
 
 #### GET /products/:id
 - **Request:** route param `id` (Int).
