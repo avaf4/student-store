@@ -110,18 +110,28 @@ app.get("/orders/:id", async (req, res) => {
   }
 });
 
-// POST /orders — create a new order
-// NOTE: the full transactional version (creating the order WITH its items and
-// computing totalPrice) is built in Milestone 5. This is a basic create for now.
+// POST /orders — create an order and all its items atomically.
+// Body: { customer, status?, items: [{ productId, quantity }, ...] }
+// The order, its items, and the computed total are written in one transaction;
+// if any product doesn't exist the whole thing rolls back and nothing is created.
 app.post("/orders", async (req, res) => {
   try {
-    const { customer, totalPrice } = req.body;
-    if (customer === undefined || totalPrice === undefined) {
-      return res.status(400).json({ error: "customer and totalPrice are required" });
+    const { customer, items } = req.body;
+
+    if (customer === undefined) {
+      return res.status(400).json({ error: "customer is required" });
     }
-    const order = await Order.create(req.body);
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: "An order must contain at least one item" });
+    }
+
+    const order = await Order.createWithItems(req.body);
     res.status(201).json(order);
   } catch (err) {
+    // A nonexistent productId is a client error (400), not a server error (500).
+    if (err.code === "PRODUCT_NOT_FOUND") {
+      return res.status(400).json({ error: err.message });
+    }
     res.status(500).json({ error: "Failed to create order" });
   }
 });

@@ -18,14 +18,57 @@ class Order {
     });
   }
 
-  // POST /orders — simple create (full transactional version comes in Milestone 5)
-  static async create(data) {
-    return prisma.order.create({
-      data: {
-        customer: data.customer,
-        totalPrice: data.totalPrice,
-        status: data.status,
-      },
+  // POST /orders — create an order AND its items atomically.
+  // `data` shape: { customer, status?, items: [{ productId, quantity }, ...] }
+  //
+  // Everything runs inside prisma.$transaction so the whole thing either commits
+  // together or rolls back together — no half-created orders. If any productId
+  // doesn't exist we throw, which aborts the transaction before anything is written.
+  static async createWithItems(data) {
+    const { customer, status, items } = data;
+
+    return prisma.$transaction(async (tx) => {
+      // 1. Look up every referenced product (also gives us the authoritative price)
+      const productIds = items.map((item) => item.productId);
+      const products = await tx.product.findMany({
+        where: { id: { in: productIds } },
+      });
+
+      // 2. Verify each requested product exists; abort if not
+      const productById = new Map(products.map((p) => [p.id, p]));
+      for (const item of items) {
+        if (!productById.has(item.productId)) {
+          // Throwing inside $transaction rolls back everything done so far.
+          const err = new Error(`Product with id ${item.productId} does not exist`);
+          err.code = "PRODUCT_NOT_FOUND";
+          throw err;
+        }
+      }
+
+      // 3. Compute each line price (from the DB, not the client) and the total
+      const orderItemsData = items.map((item) => {
+        const product = productById.get(item.productId);
+        return {
+          productId: item.productId,
+          quantity: item.quantity,
+          price: product.price,
+        };
+      });
+      const totalPrice = orderItemsData.reduce(
+        (sum, line) => sum + line.price * line.quantity,
+        0
+      );
+
+      // 4. Create the order and its items together, returning them included
+      return tx.order.create({
+        data: {
+          customer,
+          status,
+          totalPrice,
+          orderItems: { create: orderItemsData },
+        },
+        include: { orderItems: true },
+      });
     });
   }
 
