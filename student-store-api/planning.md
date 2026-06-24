@@ -287,3 +287,41 @@ Before running the migration I audited `schema.prisma` against this Data Models 
   required field on `OrderItem` from the very first schema draft (it was right in the end,
   but I initially under-specified it). Storing price-at-purchase-time on the line item is
   what makes the order's `totalPrice` meaningful even if the product's price later changes.
+
+---
+
+## Final Spec Reconciliation: Project Complete
+
+After connecting the frontend (`student-store-ui`) I audited every API call it makes against
+this contract.
+
+### Full-system audit result
+- **Products flow matches.** The frontend `GET /products` (on app mount) and
+  `GET /products/:id` (on the product detail page) match the contract's paths and the
+  array/object response shapes.
+- **Order flow matches.** Checkout sends `POST /orders` with `{ customer, items: [{ productId,
+  quantity }] }` and reads `orderItems` + `totalPrice` off the response — exactly the
+  Section 3 contract.
+- **CORS was required and is documented.** The browser frontend (`:5173`) and API (`:3038`)
+  are different origins, so `app.use(cors())` in `server.js` is mandatory. (Added back in
+  Milestone 0; confirmed still in place here.)
+
+### Gaps resolved during frontend integration
+- **`image_url` vs `imageUrl`:** the frontend read `product.image_url` (snake_case) but the
+  API returns `imageUrl` (camelCase). Per the milestone instructions ("adjust the frontend
+  as necessary"), I updated `ProductCard.jsx` and `ProductDetail.jsx` to read `imageUrl`,
+  keeping the backend aligned with this spec.
+- **Unwired handlers:** the starter frontend shipped with an empty `handleOnCheckout` and no
+  product fetching. I implemented both with axios against the documented endpoints.
+- **`customer` is an Int:** the checkout form's "Student ID" field is text, so the frontend
+  coerces it with `Number(...)` before sending, matching the `customer: Int` contract.
+- **Receipt shape:** `CheckoutSuccess` expects `order.purchase.receipt.lines`. The API
+  doesn't (and shouldn't) return a formatted receipt, so the frontend builds that display
+  structure from the real `POST /orders` response — a presentation concern, not a contract gap.
+
+### What the spec enabled during this project
+Writing the contract first meant every milestone had an unambiguous target: the route
+paths, status codes, and the `POST /orders` request/response shape were decided before any
+code, so connecting the frontend was a matter of matching documented shapes rather than
+reverse-engineering them. The one true mismatch (`imageUrl`) was obvious precisely because
+the spec named the field explicitly.
