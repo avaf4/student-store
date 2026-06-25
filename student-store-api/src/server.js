@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const Product = require("./models/product");
 const Order = require("./models/order");
+const OrderItem = require("./models/orderItem");
 
 const app = express();
 app.use(cors());
@@ -84,6 +85,18 @@ app.delete("/products/:id", async (req, res) => {
   }
 });
 
+// ---------- Order item endpoints ----------
+
+// GET /order-items — fetch every order item in the database
+app.get("/order-items", async (req, res) => {
+  try {
+    const orderItems = await OrderItem.list();
+    res.json(orderItems);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch order items" });
+  }
+});
+
 // ---------- Order endpoints ----------
 
 // GET /orders — fetch all orders
@@ -133,6 +146,32 @@ app.post("/orders", async (req, res) => {
       return res.status(400).json({ error: err.message });
     }
     res.status(500).json({ error: "Failed to create order" });
+  }
+});
+
+// POST /orders/:order_id/items — add a new line item to an existing order.
+// Body: { productId, quantity? }. The price is taken from the product in the DB
+// and the order's total is updated in the same transaction.
+app.post("/orders/:order_id/items", async (req, res) => {
+  try {
+    const orderId = Number(req.params.order_id);
+    const { productId } = req.body;
+
+    if (productId === undefined) {
+      return res.status(400).json({ error: "productId is required" });
+    }
+
+    const orderItem = await OrderItem.addToOrder(orderId, req.body);
+    res.status(201).json(orderItem);
+  } catch (err) {
+    // Missing order or product is a client error (400/404), not a 500.
+    if (err.code === "ORDER_NOT_FOUND") {
+      return res.status(404).json({ error: err.message });
+    }
+    if (err.code === "PRODUCT_NOT_FOUND") {
+      return res.status(400).json({ error: err.message });
+    }
+    res.status(500).json({ error: "Failed to add item to order" });
   }
 });
 

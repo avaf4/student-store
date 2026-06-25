@@ -267,18 +267,18 @@ Before running the migration I audited `schema.prisma` against this Data Models 
 ## Decisions Log — Order Creation Transaction
 
 - **What my Transactional Flow spec got right:** The step-by-step order of operations was
-  accurate — look up products *first*, validate existence *before* writing, compute the
+  accurate — look up products first, validate existence before writing, compute the
   total from DB prices, then create the order + items together. Implementing it followed
   the spec almost line for line.
 - **What the spec missed that I discovered during implementation:** The spec said "use
   Prisma's nested-create, which Prisma runs as a single transaction." That's true for a
-  pure nested create, but because we also need to **validate products and compute the
-  total in the same atomic unit**, I used an *interactive* transaction
+  pure nested create, but because we also need to validate products and compute the
+  total in the same atomic unit, I used an interactive transaction
   (`prisma.$transaction(async (tx) => { ... })`) instead. This wraps the lookup, the
   validation, and the create in one transaction so the existence check and the write can't
   be separated by a race.
 - **How the transaction error handling works:** Inside `prisma.$transaction`, throwing an
-  error anywhere causes Prisma to **roll back** every statement run on the `tx` client so
+  error anywhere causes Prisma to roll back every statement run on the `tx` client so
   far. I throw a tagged error (`code = "PRODUCT_NOT_FOUND"`) when a `productId` doesn't
   exist; the route catches it and returns `400`. Because the throw happens before (or
   during) the create, no order and no items are ever committed — the failure case leaves

@@ -5,7 +5,7 @@ const path = require('path')
 
 async function seed() {
   try {
-    console.log('🌱 Seeding database...\n')
+    console.log('Seeding database...\n')
 
     // Clear existing data (in order due to relations)
     await prisma.orderItem.deleteMany()
@@ -14,11 +14,11 @@ async function seed() {
 
     // Load JSON data
     const productsData = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '../data/products.json'), 'utf8')
+      fs.readFileSync(path.join(__dirname, 'data/products.json'), 'utf8')
     )
 
     const ordersData = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '../data/orders.json'), 'utf8')
+      fs.readFileSync(path.join(__dirname, 'data/orders.json'), 'utf8')
     )
 
     // Seed products
@@ -52,12 +52,12 @@ async function seed() {
         },
       })
 
-      console.log(`✅ Created order #${createdOrder.id}`)
+      console.log(`Created order #${createdOrder.id}`)
     }
 
-    console.log('\n🎉 Seeding complete!')
+    console.log('\nSeeding complete!')
   } catch (err) {
-    console.error('❌ Error seeding:', err)
+    console.error('Error seeding:', err)
   } finally {
     await prisma.$disconnect()
   }
