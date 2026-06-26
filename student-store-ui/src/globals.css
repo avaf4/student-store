@@ -3,8 +3,10 @@
 :root {
   --side-padding: 40px;
   --content-width: 1100px;
-  --dark-blue: #2c4047;
-  --bright-green: #00c385;
+  --dark-blue: #175369;
+  --store-blue: #277cb4;
+  --store-blue-dark: #277cb4;
+  --bright-green: #0e5e6b;
   --pure-white: #fff;
   --grey-bg: #f7f7f7;
   --accent-orange: #ff9017;

@@ -37,11 +37,25 @@
   font-size: 16px;
 }
 .PaymentInfo button {
-  margin-top: 10px;
-  padding: 12px 18px;
-  font-size: 18px;
+  margin-top: 12px;
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 17px;
+  font-weight: 700;
   cursor: pointer;
-  background: transparent;
-  border: solid 1px white;
+  background: var(--bright-green);
+  border: none;
+  border-radius: 8px;
   color: white;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+.PaymentInfo button:hover:not(:disabled) {
+  background: var(--store-blue);
+}
+.PaymentInfo button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.PaymentInfo button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

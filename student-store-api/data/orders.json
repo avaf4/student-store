@@ -2,7 +2,7 @@
     "orders": [
       {
         "order_id": 1,
-        "customer_id": 101,
+        "customer_email": "ava@spelman.edu",
         "total_price": 89.97,
         "status": "completed",
         "created_at": "2023-04-06T10:00:00Z",
@@ -21,7 +21,7 @@
       },
       {
         "order_id": 2,
-        "customer_id": 102,
+        "customer_email": "mak@usc.edu",
         "total_price": 61.98,
         "status": "pending",
         "created_at": "2023-04-07T15:30:00Z",

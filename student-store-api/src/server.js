@@ -102,7 +102,7 @@ app.get("/order-items", async (req, res) => {
 // GET /orders — fetch all orders
 app.get("/orders", async (req, res) => {
   try {
-    const orders = await Order.list();
+    const orders = await Order.list(req.query);
     res.json(orders);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch orders" });

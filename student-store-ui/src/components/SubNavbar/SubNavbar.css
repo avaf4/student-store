@@ -3,131 +3,167 @@
   max-width: 100vw;
   display: flex;
   flex-direction: column;
-  padding: 0 var(--side-padding);
 }
-.SubNavbar .content {
+
+/* ---------- Top blue bar ---------- */
+.SubNavbar .top-bar {
+  width: 100%;
+  background: var(--store-blue);
+}
+.SubNavbar .top-content {
   max-width: var(--content-width);
   width: 100%;
   margin: 0 auto;
   display: flex;
-  flex-direction: column;
-  padding-top: 20px;
-}
-.SubNavbar .content .row {
-  display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  margin: 20px 0;
+  gap: 24px;
+  padding: 16px var(--side-padding);
 }
-.SubNavbar .content .search-bar {
+
+.SubNavbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--pure-white);
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.SubNavbar .brand i {
+  color: var(--pure-white);
+  font-size: 28px;
+}
+
+.SubNavbar .search-bar {
   display: flex;
   flex-direction: row;
   align-items: center;
   flex: 1;
-  margin-right: 40px;
-  /* max-width: 500px; */
-  /* width: 100%; */
+  background: var(--pure-white);
+  border-radius: 6px;
+  padding: 0 12px;
+  height: 44px;
 }
-.SubNavbar .content .search-bar input {
-  height: 40px;
-  padding: 0 15px;
-  border-radius: 8px 0px 0px 8px;
-  border: solid 1px #e4e4e4;
+.SubNavbar .search-bar i {
+  color: var(--muted);
+  margin-right: 8px;
+}
+.SubNavbar .search-bar input {
+  border: none;
+  outline: none;
   flex: 1;
+  height: 100%;
   font-size: 16px;
+  background: transparent;
 }
-.SubNavbar .content .search-bar i {
-  height: 40px;
-  width: 40px;
-  background: var(--bright-green);
-  color: white;
-  fill: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.SubNavbar .content .links {
+
+.SubNavbar .actions {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  min-width: 400px;
+  gap: 12px;
 }
 
-.SubNavbar .content .help,
-.SubNavbar .content .auth a,
-.SubNavbar .content .cart a {
+/* Shared button look for Orders + Cart */
+.SubNavbar .nav-button {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  font-weight: 500;
-}
-
-.SubNavbar .content .help i {
-  color: var(--muted);
-  margin-right: 10px;
-}
-
-.SubNavbar .content .auth a {
-  color: var(--font-dark);
-  margin: 0 5px;
-}
-
-.SubNavbar .content .cart {
-  color: var(--pure-white);
-  background: var(--bright-green);
-  width: 170px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 20px;
-}
-.SubNavbar .content .cart i,
-.SubNavbar .content .cart a {
-  color: var(--pure-white);
-  margin: 0 5px;
-}
-.SubNavbar .hamburger-menu {
-  margin-right: 40px;
-}
-.SubNavbar .hamburger-menu i {
+  gap: 6px;
+  height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  color: var(--muted);
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+.SubNavbar .nav-button i {
+  font-size: 20px;
+  margin: 0;
+}
+.SubNavbar .nav-button:active {
+  transform: translateY(1px);
+}
+
+/* Orders: outlined on the blue bar */
+.SubNavbar .orders-button {
+  background: transparent;
+  color: var(--pure-white);
+  border: solid 2px rgba(255, 255, 255, 0.7);
+}
+.SubNavbar .orders-button i {
+  color: var(--pure-white);
+}
+.SubNavbar .orders-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Cart: solid accent */
+.SubNavbar .cart-button {
+  background: var(--bright-green);
+  color: var(--pure-white);
+}
+.SubNavbar .cart-button i {
+  color: var(--pure-white);
+}
+.SubNavbar .cart-button:hover {
+  background: #00a673;
+}
+
+/* Item-count badge on the cart button */
+.SubNavbar .cart-count {
+  background: var(--accent-orange);
+  color: var(--pure-white);
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Category bar ---------- */
+.SubNavbar .category-bar {
+  width: 100%;
+  background: var(--store-blue-dark);
 }
 .SubNavbar .category-menu {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--side-padding);
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
-  flex: 1;
+  gap: 8px;
   list-style-type: none;
-  height: 40px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-.SubNavbar .category-menu.closed {
-  opacity: 0;
-}
-.SubNavbar .category-menu.closed li button {
-  transform: scale(0.01);
-}
-.SubNavbar .category-menu li.is-active button {
-  border-bottom: solid 2px var(--bright-green);
+  height: 48px;
 }
 .SubNavbar .category-menu li button {
   cursor: pointer;
-  transition: all 0.1s ease;
   border: none;
   background: transparent;
   outline: none;
-  font-weight: 500;
-  font-size: 18px;
-  padding-bottom: 10px;
-  border-bottom: solid 2px transparent;
-  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  font-size: 15px;
+  height: 48px;
+  padding: 0 14px;
+  border-bottom: solid 3px transparent;
+  transition: all 0.15s ease;
 }
-.SubNavbar .category-menu li button:active {
-  transform: translateY(1px);
+.SubNavbar .category-menu li button:hover {
+  color: var(--pure-white);
+}
+.SubNavbar .category-menu li.is-active button {
+  color: var(--pure-white);
+  border-bottom: solid 3px var(--bright-green);
 }

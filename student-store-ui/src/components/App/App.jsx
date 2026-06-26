@@ -5,6 +5,8 @@ import SubNavbar from "../SubNavbar/SubNavbar";
 import Sidebar from "../Sidebar/Sidebar";
 import Home from "../Home/Home";
 import ProductDetail from "../ProductDetail/ProductDetail";
+import Orders from "../Orders/Orders";
+import OrderDetail from "../OrderDetail/OrderDetail";
 import NotFound from "../NotFound/NotFound";
 import { removeFromCart, addToCart, getQuantityOfItemInCart, getTotalItemsInCart } from "../../utils/cart";
 import "./App.css";
@@ -18,7 +20,7 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All Categories");
   const [searchInputValue, setSearchInputValue] = useState("");
-  const [userInfo, setUserInfo] = useState({ name: "", dorm_number: ""});
+  const [userInfo, setUserInfo] = useState({ name: "", email: "" });
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
   const [isFetching, setIsFetching] = useState(false);
@@ -75,7 +77,7 @@ function App() {
       }
 
       const { data: createdOrder } = await axios.post(`${API_BASE_URL}/orders`, {
-        customer: Number(userInfo.name) || 0, // "Student ID" field maps to customer (Int)
+        customer: userInfo.email, // the email field maps to customer (String) so orders are filterable by email
         items,
       });
 
@@ -126,6 +128,8 @@ function App() {
             setActiveCategory={setActiveCategory}
             searchInputValue={searchInputValue}
             handleOnSearchInputChange={handleOnSearchInputChange}
+            toggleSidebar={toggleSidebar}
+            cartCount={handleGetTotalCartItems()}
           />
           <Routes>
             <Route
@@ -144,6 +148,8 @@ function App() {
                 />
               }
             />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:orderId" element={<OrderDetail />} />
             <Route
               path="/:productId"
               element={

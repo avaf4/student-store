@@ -25,7 +25,7 @@ model Product {
 
 model Order {
   id          Int         @id @default(autoincrement())
-  customer    Int
+  customer    String
   totalPrice  Float
   status      String      @default("pending")
   createdAt   DateTime    @default(now())
